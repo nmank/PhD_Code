@@ -13,7 +13,7 @@ seed = 0
 n_trials = 10
 
 
-base_path = './data/action_youtube_gr/'
+base_path = '/data4/mankovic/CVPR2022/data/action_youtube_gr/'
 X = []
 labels_true = []
 count = 0
@@ -45,9 +45,9 @@ for n in range(4, 24, 4):
         print('sin start')
         centers_sin, error_sin, dist_sin = ca.lbg_subspace(X, .0001, n_centers = n, opt_type = 'sine', n_its = 10, seed = trial)
         sin_purity = ca.cluster_purity(X, centers_sin, labels_true)
-        print('cos start')
-        centers_cos, error_cos, dist_cos = ca.lbg_subspace(X, .0001, n_centers = n, opt_type = 'cosine', n_its = 10, seed = trial, similarity = True)
-        cos_purity = ca.cluster_purity(X, centers_cos, labels_true, similarity = True)
+        # print('cos start')
+        # centers_cos, error_cos, dist_cos = ca.lbg_subspace(X, .0001, n_centers = n, opt_type = 'cosine', n_its = 10, seed = trial, similarity = False)
+        # cos_purity = ca.cluster_purity(X, centers_cos, labels_true, similarity = False)
         print('flg start')
         centers_flg, error_flg, dist_flg = ca.lbg_subspace(X, .0001, n_centers = n, opt_type = 'sinesq', seed = trial)
         flg_purity = ca.cluster_purity(X, centers_flg, labels_true)
@@ -58,10 +58,10 @@ for n in range(4, 24, 4):
                                 'Cluster Purity': sin_purity},
                                 ignore_index = True)
         
-        Purities = Purities.append({'Algorithm': 'Max Cor Flag', 
-                                'Codebook Size': n,
-                                'Cluster Purity': cos_purity},
-                                ignore_index = True)
+        # Purities = Purities.append({'Algorithm': 'Max Cor Flag', 
+        #                         'Codebook Size': n,
+        #                         'Cluster Purity': cos_purity},
+        #                         ignore_index = True)
 
         Purities = Purities.append({'Algorithm': 'Flag Mean', 
                                 'Codebook Size': n,
@@ -70,7 +70,7 @@ for n in range(4, 24, 4):
     # print(Purities)
     # Purities.to_csv('youtube_LBG_results_20trials'+str(n)+'.csv')
         
-# Purities.to_csv('youtube_LBG_results_20trials.csv')
+Purities.to_csv('./youtube_lbg_'+str(n_trials)+'trials.csv')
 
 sns.boxplot(x='Codebook Size', y='Cluster Purity', hue='Algorithm', data = Purities)
 plt.legend(bbox_to_anchor=(1.01, 1), borderaxespad=0)

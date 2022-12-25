@@ -16,13 +16,13 @@ n_trials = 20
 
 f_name = './minds_eye_lbg_'+str(n_trials)+'trials.png'
 
-labels_raw = sio.loadmat('MindsEye/kmeans_action_labels.mat')['kmeans_action_labels']
+labels_raw = sio.loadmat('/data4/mankovic/CVPR2022/data/MindsEye/kmeans_action_labels.mat')['kmeans_action_labels']
 
 labels_true = [l[0][0] for l in labels_raw['labels'][0][0]]
 # labelidxs =labels_raw['labelidxs'][0][0][0]
 
 
-raw_data = mat73.loadmat('MindsEye/kmeans_pts.mat')
+raw_data = mat73.loadmat('/data4/mankovic/CVPR2022/data/MindsEye/kmeans_pts.mat')
 
 X = [t[0] for t in raw_data['Data']['gr_pts']]
 
@@ -53,9 +53,9 @@ for n in range(4, 24, 4):
         print('sin start')
         centers_sin, error_sin, dist_sin = ca.lbg_subspace(X, .0001, n_centers = n, opt_type = 'sine', n_its = 10, seed = trial)
         sin_purity = ca.cluster_purity(X, centers_sin, labels_true)
-        print('cos start')
-        centers_cos, error_cos, dist_cos = ca.lbg_subspace(X, .0001, n_centers = n, opt_type = 'cosine', n_its = 10, seed = trial, similarity = True)
-        cos_purity = ca.cluster_purity(X, centers_cos, labels_true, similarity = True)
+        # print('cos start')
+        # centers_cos, error_cos, dist_cos = ca.lbg_subspace(X, .0001, n_centers = n, opt_type = 'cosine', n_its = 10, seed = trial, similarity = False)
+        # cos_purity = ca.cluster_purity(X, centers_cos, labels_true, similarity = False)
         print('l2 start')
         centers_l2, error_l2, dist_l2 = ca.lbg_subspace(X, .0001, n_centers = n, opt_type = 'l2_med', n_its = 10, seed = trial)
         l2_purity = ca.cluster_purity(X, centers_l2, labels_true)
@@ -68,6 +68,10 @@ for n in range(4, 24, 4):
                                 'Codebook Size': n,
                                 'Cluster Purity': sin_purity},
                                 ignore_index = True)
+        # Purities = Purities.append({'Algorithm': 'Max Cor Flag', 
+        #                         'Codebook Size': n,
+        #                         'Cluster Purity': cos_purity},
+        #                         ignore_index = True)
         Purities = Purities.append({'Algorithm': 'L2 Median', 
                                 'Codebook Size': n,
                                 'Cluster Purity': l2_purity},
@@ -76,12 +80,9 @@ for n in range(4, 24, 4):
                                 'Codebook Size': n,
                                 'Cluster Purity': flg_purity},
                                 ignore_index = True)
-        Purities = Purities.append({'Algorithm': 'Max Cor Flag', 
-                                'Codebook Size': n,
-                                'Cluster Purity': cos_purity},
-                                ignore_index = True)
+
     print(Purities)
-Purities.to_csv('minds_eye_lbg_results.csv')
+Purities.to_csv('./minds_eye_lbg_'+str(n_trials)+'trials.csv')
         
 
 
